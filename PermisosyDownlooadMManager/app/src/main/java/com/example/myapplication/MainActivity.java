@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
     final static int cons=1;
     Bitmap btm;
     Button btfoto;
+    Button btfile;
+
+    Uri uriTree;
+    final static int RQS_OPEN_DOCUMENT_TREE=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +52,18 @@ public class MainActivity extends AppCompatActivity {
         getPermission(permisos);
 
         btfoto=findViewById(R.id.button3);
+        btfile=findViewById(R.id.button);
         btfoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 guardarFoto(v);
+            }
+        });
+        btfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                BajarDoc(v);
             }
         });
     }
@@ -67,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE)
+        { uriTree = data.getData();}
+
         if(requestCode==cons && resultCode== Activity.RESULT_OK){
             Bundle bd=data.getExtras();
             btm=(Bitmap)bd.get("data");
@@ -117,19 +133,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void BajarDoc(View view){
+        i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        startActivityForResult(i, RQS_OPEN_DOCUMENT_TREE);
+
         String url = "https://www.uteq.edu.ec/revistacyt/archivositio/instrucciones_arbitros.pdf";
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setDescription("PDF");
         request.setTitle("Pdf");
-        File filepath = Environment.getExternalStorageDirectory();
-        File dir=new File(filepath.getAbsolutePath());
-        dir.mkdir();
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 request.allowScanningByMediaScanner();
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             }
-
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "filedownload.pdf");
+       String g= Environment.DIRECTORY_DOWNLOADS;
+            g=uriTree.toString();
+        request.setDestinationInExternalPublicDir(uriTree.toString(), "filedownload.pdf");
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         try {
             manager.enqueue(request);
