@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
                 request.allowScanningByMediaScanner();
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             }
-//        Environment.DIRECTORY_DOWNLOADS
-        request.setDestinationInExternalPublicDir(dir.getPath(), "filedownload.pdf");
+
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "filedownload.pdf");
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         try {
             manager.enqueue(request);
